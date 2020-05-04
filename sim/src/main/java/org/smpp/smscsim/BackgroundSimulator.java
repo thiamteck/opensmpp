@@ -87,7 +87,7 @@ public class BackgroundSimulator {
 	/**
 	 * The debug object.
 	 */
-	static Debug debug = new FileDebug(dbgDir, "sim.dbg");
+	static Debug debug = new LoggerDebug(BackgroundSimulator.class.getName());
 	
 	/**
 	 * The event object.
