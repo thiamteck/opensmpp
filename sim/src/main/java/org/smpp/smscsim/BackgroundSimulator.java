@@ -48,10 +48,10 @@ import org.smpp.smscsim.util.Table;
  * directory name in the <code>-cp</code> argument.
  * </p>
  * <p>
- * User file can be specified using <code>usersFileName</code> property, e.g.: <code>-DusersFileName=/my/path/to/users.txt</code>
- * </p>
- * <p>
- * SMPP server port can be specifued using <code>smppServerPort</code> property, e.g.: <code>-DsmppServerPort=2345</code>
+ * User file can be specified using <code>usersFileName</code> property, e.g.: <code>-DusersFileName=/my/path/to/users.txt</code>.
+ * SMPP server port can be specified using <code>smppServerPort</code> property, e.g.: <code>-DsmppServerPort=2345</code>.
+ * Menu can be enabled/disable using <code>withMenu</code> property, e.g.: <code>-DwithMenu=false</code>
+ 
  * </p>
  * 
  * @author Logica Mobile Networks SMPP Open Source Team
@@ -79,6 +79,8 @@ public class BackgroundSimulator {
 
 	static String serverPort = System.getProperty("smppServerPort", "2345");
 
+	static String withMenu = System.getProperty("withMenu", "false");
+
 	/**
 	 * Directory for creating of debug and event files.
 	 */
@@ -87,7 +89,7 @@ public class BackgroundSimulator {
 	/**
 	 * The debug object.
 	 */
-	static Debug debug = new LoggerDebug(BackgroundSimulator.class.getName());
+	static Debug debug = new Slf4jLoggerDebug(BackgroundSimulator.class.getName());
 	
 	/**
 	 * The event object.
@@ -126,10 +128,14 @@ public class BackgroundSimulator {
 		debug.deactivate(SmppObject.DCOMD);
 		debug.deactivate(DSIMD2);
 		BackgroundSimulator menu = new BackgroundSimulator();
-		menu.start();
-		menu.logToScreen();
-		// menu.menu();
-		
+		menu.start();		
+
+		if(withMenu != null %% withMenu.equalsIgnoreCase("true")){
+			menu.menu();
+		}else{
+			// pure background, turn off screen logging
+			menu.logToScreen();
+		} 
 	}
 
 	/**
@@ -216,7 +222,7 @@ public class BackgroundSimulator {
 			System.out.print("Starting listener... ");
 			smscListener = new SMSCListenerImpl(port, true);
 			processors = new PDUProcessorGroup();
-			messageStore = new ShortMessageStore();
+			messageStore = new BlackholeShortMessageStore();
 			deliveryInfoSender = new DeliveryInfoSender();
 			deliveryInfoSender.start();
 			users = new Table(usersFileName);
