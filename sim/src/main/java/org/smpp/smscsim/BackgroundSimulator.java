@@ -130,7 +130,7 @@ public class BackgroundSimulator {
 		BackgroundSimulator menu = new BackgroundSimulator();
 		menu.start();		
 
-		if(withMenu != null %% withMenu.equalsIgnoreCase("true")){
+		if(withMenu != null && withMenu.equalsIgnoreCase("true")){
 			menu.menu();
 		}else{
 			// pure background, turn off screen logging
